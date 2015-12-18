@@ -1,0 +1,24 @@
+language: node_js
+
+node_js:
+  - '4'
+  - 'stable'
+
+os:
+  - linux
+
+sudo: false
+
+after_success: npm run coveralls
+
+matrix:
+  fast_finish: true
+
+notifications:
+  email: false
+  webhooks:
+    urls:
+      - https://webhooks.gitter.im/e/8c1769bff63cbd033bf7
+    on_success: always
+    on_failure: always
+    on_start: false
