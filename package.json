@@ -1,6 +1,6 @@
 {
   "name": "@nodecg/logger",
-  "version": "1.0.0",
+  "version": "0.0.0",
   "description": "NodeCG's internal logging library",
   "main": "index.js",
   "scripts": {
