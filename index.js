@@ -44,7 +44,8 @@ module.exports = function(initialOpts) {
         prettyPrint: true,
         colorize: true,
         level: initialOpts.console.level || 'info',
-        silent: !initialOpts.console.enabled
+        silent: !initialOpts.console.enabled,
+        stderrLevels: ['warn', 'error']
     });
 
     var fileTransport = new winston.transports.File({
@@ -67,11 +68,11 @@ module.exports = function(initialOpts) {
     var mainLogger = new (winston.Logger)({
         transports: [consoleTransport, fileTransport],
         levels: {
-            trace: 0,
-            debug: 1,
+            trace: 4,
+            debug: 3,
             info: 2,
-            warn: 3,
-            error: 4
+            warn: 1,
+            error: 0
         }
     });
 

@@ -109,5 +109,35 @@ describe('server', function() {
             expect(Logger._winston.info.getCall(0).args[1]).to.equal('replicants');
             Logger._winston.info.restore();
         });
+
+        it('should not generate any output when too low a level', function() {
+            Logger.globalReconfigure({
+                console: {
+                    enabled: true,
+                    level: 'error'
+                }
+            });
+
+            sinon.spy(process.stdout, 'write');
+            this.logger.trace('warning');
+            expect(process.stdout.write.called).to.equal(false);
+            process.stdout.write.restore();
+        });
+
+        it('should generate any output when of an adequate level', function() {
+            Logger.globalReconfigure({
+                console: {
+                    enabled: true,
+                    level: 'trace'
+                }
+            });
+
+            sinon.spy(process.stdout, 'write');
+            this.logger.trace('info');
+            expect(process.stdout.write.getCall(0).args[0]).to.equal(
+                '\u001b[32mtrace\u001b[39m: [testServer] info\r\n'
+            );
+            process.stdout.write.restore();
+        });
     });
 });
