@@ -140,43 +140,37 @@ describe('client', function() {
             // Trace
             sinon.spy(console, 'info');
             this.logger.trace('trace');
-            expect(console.info.getCall(0).args[0]).to.equal('[testClient]');
-            expect(console.info.getCall(0).args[1]).to.equal('trace');
+            expect(console.info.getCall(0).args[0]).to.equal('[testClient] trace');
             console.info.restore();
 
             // Debug
             sinon.spy(console, 'info');
             this.logger.debug('debug');
-            expect(console.info.getCall(0).args[0]).to.equal('[testClient]');
-            expect(console.info.getCall(0).args[1]).to.equal('debug');
+            expect(console.info.getCall(0).args[0]).to.equal('[testClient] debug');
             console.info.restore();
 
             // Info
             sinon.spy(console, 'info');
             this.logger.info('info');
-            expect(console.info.getCall(0).args[0]).to.equal('[testClient]');
-            expect(console.info.getCall(0).args[1]).to.equal('info');
+            expect(console.info.getCall(0).args[0]).to.equal('[testClient] info');
             console.info.restore();
 
             // Warn
             sinon.spy(console, 'warn');
             this.logger.warn('warn');
-            expect(console.warn.getCall(0).args[0]).to.equal('[testClient]');
-            expect(console.warn.getCall(0).args[1]).to.equal('warn');
+            expect(console.warn.getCall(0).args[0]).to.equal('[testClient] warn');
             console.warn.restore();
 
             // Error
             sinon.spy(console, 'error');
             this.logger.error('error');
-            expect(console.error.getCall(0).args[0]).to.equal('[testClient]');
-            expect(console.error.getCall(0).args[1]).to.equal('error');
+            expect(console.error.getCall(0).args[0]).to.equal('[testClient] error');
             console.error.restore();
 
             // Replicants
             sinon.spy(console, 'info');
             this.logger.replicants('replicants');
-            expect(console.info.getCall(0).args[0]).to.equal('[testClient]');
-            expect(console.info.getCall(0).args[1]).to.equal('replicants');
+            expect(console.info.getCall(0).args[0]).to.equal('[testClient] replicants');
             console.info.restore();
         });
     });

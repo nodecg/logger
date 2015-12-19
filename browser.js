@@ -51,37 +51,37 @@ module.exports = function(initialOpts) {
         trace: function () {
             if (Logger._silent) return;
             if (LOG_LEVELS[Logger._level] > LOG_LEVELS.trace) return;
-            Array.prototype.unshift.call(arguments, '[' + this.name + ']');
+            arguments[0] = '[' + this.name + '] ' + arguments[0];
             console.info.apply(console, arguments);
         },
         debug: function () {
             if (Logger._silent) return;
             if (LOG_LEVELS[Logger._level] > LOG_LEVELS.debug) return;
-            Array.prototype.unshift.call(arguments, '[' + this.name + ']');
+            arguments[0] = '[' + this.name + '] ' + arguments[0];
             console.info.apply(console, arguments);
         },
         info: function() {
             if (Logger._silent) return;
             if (LOG_LEVELS[Logger._level] > LOG_LEVELS.info) return;
-            Array.prototype.unshift.call(arguments, '[' + this.name + ']');
+            arguments[0] = '[' + this.name + '] ' + arguments[0];
             console.info.apply(console, arguments);
         },
         warn: function() {
             if (Logger._silent) return;
             if (LOG_LEVELS[Logger._level] > LOG_LEVELS.warn) return;
-            Array.prototype.unshift.call(arguments, '[' + this.name + ']');
+            arguments[0] = '[' + this.name + '] ' + arguments[0];
             console.warn.apply(console, arguments);
         },
         error: function() {
             if (Logger._silent) return;
             if (LOG_LEVELS[Logger._level] > LOG_LEVELS.error) return;
-            Array.prototype.unshift.call(arguments, '[' + this.name + ']');
+            arguments[0] = '[' + this.name + '] ' + arguments[0];
             console.error.apply(console, arguments);
         },
         replicants: function() {
             if (Logger._silent) return;
             if (!Logger._shouldLogReplicants) return;
-            Array.prototype.unshift.call(arguments, '[' + this.name + ']');
+            arguments[0] = '[' + this.name + '] ' + arguments[0];
             console.info.apply(console, arguments);
         }
     };

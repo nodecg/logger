@@ -97,16 +97,14 @@ describe('server', function() {
             ['trace', 'debug', 'info', 'warn', 'error'].forEach(function(level) {
                 sinon.spy(Logger._winston, level);
                 self.logger[level](level);
-                expect(Logger._winston[level].getCall(0).args[0]).to.equal('[testServer]');
-                expect(Logger._winston[level].getCall(0).args[1]).to.equal(level);
+                expect(Logger._winston[level].getCall(0).args[0]).to.equal('[testServer] ' + level);
                 Logger._winston[level].restore();
             });
 
             // Replicants has to be tested differently than the others
             sinon.spy(Logger._winston, 'info');
             self.logger.replicants('replicants');
-            expect(Logger._winston.info.getCall(0).args[0]).to.equal('[testServer]');
-            expect(Logger._winston.info.getCall(0).args[1]).to.equal('replicants');
+            expect(Logger._winston.info.getCall(0).args[0]).to.equal('[testServer] replicants');
             Logger._winston.info.restore();
         });
 

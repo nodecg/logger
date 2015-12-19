@@ -129,28 +129,28 @@ module.exports = function(initialOpts) {
 
     Logger.prototype = {
         trace: function () {
-            Array.prototype.unshift.call(arguments, '[' + this.name + ']');
+            arguments[0] = '[' + this.name + '] ' + arguments[0];
             mainLogger.trace.apply(mainLogger, arguments);
         },
         debug: function () {
-            Array.prototype.unshift.call(arguments, '[' + this.name + ']');
+            arguments[0] = '[' + this.name + '] ' + arguments[0];
             mainLogger.debug.apply(mainLogger, arguments);
         },
         info: function() {
-            Array.prototype.unshift.call(arguments, '[' + this.name + ']');
+            arguments[0] = '[' + this.name + '] ' + arguments[0];
             mainLogger.info.apply(mainLogger, arguments);
         },
         warn: function() {
-            Array.prototype.unshift.call(arguments, '[' + this.name + ']');
+            arguments[0] = '[' + this.name + '] ' + arguments[0];
             mainLogger.warn.apply(mainLogger, arguments);
         },
         error: function() {
-            Array.prototype.unshift.call(arguments, '[' + this.name + ']');
+            arguments[0] = '[' + this.name + '] ' + arguments[0];
             mainLogger.error.apply(mainLogger, arguments);
         },
         replicants: function() {
             if (!Logger._shouldLogReplicants) return;
-            Array.prototype.unshift.call(arguments, '[' + this.name + ']');
+            arguments[0] = '[' + this.name + '] ' + arguments[0];
             mainLogger.info.apply(mainLogger, arguments);
         }
     };
