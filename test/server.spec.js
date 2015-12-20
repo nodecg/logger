@@ -132,8 +132,8 @@ describe('server', function() {
 
             sinon.spy(process.stdout, 'write');
             this.logger.trace('info');
-            expect(process.stdout.write.getCall(0).args[0]).to.equal(
-                '\u001b[32mtrace\u001b[39m: [testServer] info\r\n'
+            expect(process.stdout.write.getCall(0).args[0]).to.startsWith(
+                '\u001b[32mtrace\u001b[39m: [testServer] info'
             );
             process.stdout.write.restore();
         });
