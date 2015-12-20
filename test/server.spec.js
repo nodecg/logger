@@ -5,6 +5,8 @@ var fs = require('fs');
 var sinon = require('sinon');
 var rimraf = require('rimraf');
 var chai = require('chai');
+
+chai.use(require('chai-string'));
 var expect = chai.expect;
 
 // Start up the logger lib with defaults only
@@ -132,7 +134,7 @@ describe('server', function() {
 
             sinon.spy(process.stdout, 'write');
             this.logger.trace('info');
-            expect(process.stdout.write.getCall(0).args[0]).to.startsWith(
+            expect(process.stdout.write.getCall(0).args[0]).to.startWith(
                 '\u001b[32mtrace\u001b[39m: [testServer] info'
             );
             process.stdout.write.restore();
