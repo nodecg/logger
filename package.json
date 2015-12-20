@@ -27,6 +27,7 @@
   },
   "homepage": "https://github.com/nodecg/logger#readme",
   "files": [
+    "README.md",
     "LICENSE",
     "index.js",
     "browser.js"
