@@ -1,19 +1,19 @@
 'use strict';
 
-var path = require('path');
-var fs = require('fs.extra');
-var winston = require('winston');
+const path = require('path');
+const fs = require('fs.extra');
+const winston = require('winston');
 
 /**
  * Enum logging level values.
  * @enum {String}
  */
-var ENUM_LEVELS = { // jshint ignore:line
-    trace: 'The highest level of logging, logs everything.',
-    debug: 'Less spammy than trace, includes most info relevant for debugging.',
-    info: 'The default logging level. Logs useful info, warnings, and errors.',
-    warn: 'Only logs warnings and errors.',
-    error: 'Only logs errors.'
+const ENUM_LEVELS = { // eslint-disable-line no-unused-vars
+	trace: 'The highest level of logging, logs everything.',
+	debug: 'Less spammy than trace, includes most info relevant for debugging.',
+	info: 'The default logging level. Logs useful info, warnings, and errors.',
+	warn: 'Only logs warnings and errors.',
+	error: 'Only logs errors.'
 };
 
 /**
@@ -33,136 +33,139 @@ var ENUM_LEVELS = { // jshint ignore:line
  *
  * @returns {function} - A constructor used to create discrete logger instances.
  */
-module.exports = function(initialOpts) {
-    initialOpts = initialOpts || {};
-    initialOpts.console = initialOpts.console || {};
-    initialOpts.file = initialOpts.file || {};
-    initialOpts.file.path = initialOpts.file.path || 'logs/nodecg.log';
+module.exports = function (initialOpts) {
+	initialOpts = initialOpts || {};
+	initialOpts.console = initialOpts.console || {};
+	initialOpts.file = initialOpts.file || {};
+	initialOpts.file.path = initialOpts.file.path || 'logs/nodecg.log';
 
-    var consoleTransport = new winston.transports.Console({
-        name: 'nodecgConsole',
-        prettyPrint: true,
-        colorize: true,
-        level: initialOpts.console.level || 'info',
-        silent: !initialOpts.console.enabled,
-        stderrLevels: ['warn', 'error']
-    });
+	const consoleTransport = new winston.transports.Console({
+		name: 'nodecgConsole',
+		prettyPrint: true,
+		colorize: true,
+		level: initialOpts.console.level || 'info',
+		silent: !initialOpts.console.enabled,
+		stderrLevels: ['warn', 'error']
+	});
 
-    var fileTransport = new winston.transports.File({
-        name: 'nodecgFile',
-        json: false,
-        prettyPrint: true,
-        filename: initialOpts.file.path,
-        level: initialOpts.file.level || 'info',
-        silent: !initialOpts.file.enabled
-    });
+	const fileTransport = new winston.transports.File({
+		name: 'nodecgFile',
+		json: false,
+		prettyPrint: true,
+		filename: initialOpts.file.path,
+		level: initialOpts.file.level || 'info',
+		silent: !initialOpts.file.enabled
+	});
 
-    winston.addColors({
-        trace: 'green',
-        debug: 'cyan',
-        info: 'white',
-        warn: 'yellow',
-        error: 'red'
-    });
+	winston.addColors({
+		trace: 'green',
+		debug: 'cyan',
+		info: 'white',
+		warn: 'yellow',
+		error: 'red'
+	});
 
-    var mainLogger = new (winston.Logger)({
-        transports: [consoleTransport, fileTransport],
-        levels: {
-            trace: 4,
-            debug: 3,
-            info: 2,
-            warn: 1,
-            error: 0
-        }
-    });
+	const mainLogger = new (winston.Logger)({
+		transports: [consoleTransport, fileTransport],
+		levels: {
+			trace: 4,
+			debug: 3,
+			info: 2,
+			warn: 1,
+			error: 0
+		}
+	});
 
-    _configure(initialOpts);
+	_configure(initialOpts);
 
-    function _configure(opts) {
-        // Initialize opts with empty objects, if nothing was provided.
-        opts = opts || {};
-        opts.console = opts.console || {};
-        opts.file = opts.file || {};
+	function _configure(opts) {
+		// Initialize opts with empty objects, if nothing was provided.
+		opts = opts || {};
+		opts.console = opts.console || {};
+		opts.file = opts.file || {};
 
-        if (typeof opts.console.enabled !== 'undefined') {
-            consoleTransport.silent = !opts.console.enabled;
-        }
+		if (typeof opts.console.enabled !== 'undefined') {
+			consoleTransport.silent = !opts.console.enabled;
+		}
 
-        if (typeof opts.console.level !== 'undefined') {
-            consoleTransport.level = opts.console.level;
-        }
+		if (typeof opts.console.level !== 'undefined') {
+			consoleTransport.level = opts.console.level;
+		}
 
-        if (typeof opts.file.enabled !== 'undefined') {
-            fileTransport.silent = !opts.file.enabled;
-        }
+		if (typeof opts.file.enabled !== 'undefined') {
+			fileTransport.silent = !opts.file.enabled;
+		}
 
-        if (typeof opts.file.level !== 'undefined') {
-            fileTransport.level = opts.file.level;
-        }
+		if (typeof opts.file.level !== 'undefined') {
+			fileTransport.level = opts.file.level;
+		}
 
-        if (typeof opts.file.path !== 'undefined') {
-            fileTransport.filename = opts.file.path;
-            _makeLogFolderIfItDoesNotExist(opts.file.path);
-        }
+		if (typeof opts.file.path !== 'undefined') {
+			fileTransport.filename = opts.file.path;
+			_makeLogFolderIfItDoesNotExist(opts.file.path);
+		}
 
-        if (typeof opts.replicants !== 'undefined') {
-            Logger._shouldLogReplicants = opts.replicants;
-        }
-    }
+		if (typeof opts.replicants !== 'undefined') {
+			Logger._shouldLogReplicants = opts.replicants;
+		}
+	}
 
-    function _makeLogFolderIfItDoesNotExist(folderPath) {
-        // Make logs folder if it does not exist.
-        if (!fs.existsSync(path.dirname(folderPath))) {
-            fs.mkdirpSync(path.dirname(folderPath));
-        }
-    }
+	function _makeLogFolderIfItDoesNotExist(folderPath) {
+		// Make logs folder if it does not exist.
+		if (!fs.existsSync(path.dirname(folderPath))) {
+			fs.mkdirpSync(path.dirname(folderPath));
+		}
+	}
 
-    /**
-     * Constructs a new Logger instance that prefixes all output with the given name.
-     * @param name {String} - The label to prefix all output of this logger with.
-     * @returns {Object} - A Logger instance.
-     * @constructor
-     */
-    function Logger(name) {
-        this.name = name;
-    }
+	/**
+	 * Constructs a new Logger instance that prefixes all output with the given name.
+	 * @param name {String} - The label to prefix all output of this logger with.
+	 * @returns {Object} - A Logger instance.
+	 * @constructor
+	 */
+	function Logger(name) {
+		this.name = name;
+	}
 
-    Logger.prototype = {
-        trace: function () {
-            arguments[0] = '[' + this.name + '] ' + arguments[0];
-            mainLogger.trace.apply(mainLogger, arguments);
-        },
-        debug: function () {
-            arguments[0] = '[' + this.name + '] ' + arguments[0];
-            mainLogger.debug.apply(mainLogger, arguments);
-        },
-        info: function() {
-            arguments[0] = '[' + this.name + '] ' + arguments[0];
-            mainLogger.info.apply(mainLogger, arguments);
-        },
-        warn: function() {
-            arguments[0] = '[' + this.name + '] ' + arguments[0];
-            mainLogger.warn.apply(mainLogger, arguments);
-        },
-        error: function() {
-            arguments[0] = '[' + this.name + '] ' + arguments[0];
-            mainLogger.error.apply(mainLogger, arguments);
-        },
-        replicants: function() {
-            if (!Logger._shouldLogReplicants) return;
-            arguments[0] = '[' + this.name + '] ' + arguments[0];
-            mainLogger.info.apply(mainLogger, arguments);
-        }
-    };
+	Logger.prototype = {
+		trace() {
+			arguments[0] = '[' + this.name + '] ' + arguments[0];
+			mainLogger.trace.apply(mainLogger, arguments);
+		},
+		debug() {
+			arguments[0] = '[' + this.name + '] ' + arguments[0];
+			mainLogger.debug.apply(mainLogger, arguments);
+		},
+		info() {
+			arguments[0] = '[' + this.name + '] ' + arguments[0];
+			mainLogger.info.apply(mainLogger, arguments);
+		},
+		warn() {
+			arguments[0] = '[' + this.name + '] ' + arguments[0];
+			mainLogger.warn.apply(mainLogger, arguments);
+		},
+		error() {
+			arguments[0] = '[' + this.name + '] ' + arguments[0];
+			mainLogger.error.apply(mainLogger, arguments);
+		},
+		replicants() {
+			if (!Logger._shouldLogReplicants) {
+				return;
+			}
 
-    Logger.globalReconfigure = function(opts) {
-        _configure(opts);
-    };
+			arguments[0] = '[' + this.name + '] ' + arguments[0];
+			mainLogger.info.apply(mainLogger, arguments);
+		}
+	};
 
-    Logger._winston = mainLogger;
+	Logger.globalReconfigure = function (opts) {
+		_configure(opts);
+	};
 
-    // A messy bit of internal state used to determine if the special-case "replicants" logging level is active.
-    Logger._shouldLogReplicants = Boolean(initialOpts.replicants);
+	Logger._winston = mainLogger;
 
-    return Logger;
+	// A messy bit of internal state used to determine if the special-case "replicants" logging level is active.
+	Logger._shouldLogReplicants = Boolean(initialOpts.replicants);
+
+	return Logger;
 };

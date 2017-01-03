@@ -1,24 +1,24 @@
 'use strict';
 
-var LOG_LEVELS = {
-    trace: 0,
-    debug: 1,
-    info: 2,
-    warn: 3,
-    error: 4,
-    _infinite: Infinity
+const LOG_LEVELS = {
+	trace: 0,
+	debug: 1,
+	info: 2,
+	warn: 3,
+	error: 4,
+	_infinite: Infinity
 };
 
 /**
  * Enum logging level values.
  * @enum {String}
  */
-var ENUM_LEVELS = { // jshint ignore:line
-    trace: 'The highest level of logging, logs everything.',
-    debug: 'Less spammy than trace, includes most info relevant for debugging.',
-    info: 'The default logging level. Logs useful info, warnings, and errors.',
-    warn: 'Only logs warnings and errors.',
-    error: 'Only logs errors.'
+const ENUM_LEVELS = { // eslint-disable-line no-unused-vars
+	trace: 'The highest level of logging, logs everything.',
+	debug: 'Less spammy than trace, includes most info relevant for debugging.',
+	info: 'The default logging level. Logs useful info, warnings, and errors.',
+	warn: 'Only logs warnings and errors.',
+	error: 'Only logs errors.'
 };
 
 /**
@@ -33,88 +33,129 @@ var ENUM_LEVELS = { // jshint ignore:line
  *
  * @returns {function} - A constructor used to create discrete logger instances.
  */
-module.exports = function(initialOpts) {
-    initialOpts = initialOpts || {};
-    initialOpts.console = initialOpts.console || {};
+module.exports = function (initialOpts) {
+	initialOpts = initialOpts || {};
+	initialOpts.console = initialOpts.console || {};
 
-    /**
-     * Constructs a new Logger instance that prefixes all output with the given name.
-     * @param name {String} - The label to prefix all output of this logger with.
-     * @returns {Object} - A Logger instance.
-     * @constructor
-     */
-    function Logger(name) {
-        this.name = name;
-    }
+	/**
+	 * Constructs a new Logger instance that prefixes all output with the given name.
+	 * @param name {String} - The label to prefix all output of this logger with.
+	 * @returns {Object} - A Logger instance.
+	 * @constructor
+	 */
+	class Logger {
+		constructor(name) {
+			this.name = name;
+		}
 
-    Logger.prototype = {
-        trace: function () {
-            if (Logger._silent) return;
-            if (LOG_LEVELS[Logger._level] > LOG_LEVELS.trace) return;
-            arguments[0] = '[' + this.name + '] ' + arguments[0];
-            console.info.apply(console, arguments);
-        },
-        debug: function () {
-            if (Logger._silent) return;
-            if (LOG_LEVELS[Logger._level] > LOG_LEVELS.debug) return;
-            arguments[0] = '[' + this.name + '] ' + arguments[0];
-            console.info.apply(console, arguments);
-        },
-        info: function() {
-            if (Logger._silent) return;
-            if (LOG_LEVELS[Logger._level] > LOG_LEVELS.info) return;
-            arguments[0] = '[' + this.name + '] ' + arguments[0];
-            console.info.apply(console, arguments);
-        },
-        warn: function() {
-            if (Logger._silent) return;
-            if (LOG_LEVELS[Logger._level] > LOG_LEVELS.warn) return;
-            arguments[0] = '[' + this.name + '] ' + arguments[0];
-            console.warn.apply(console, arguments);
-        },
-        error: function() {
-            if (Logger._silent) return;
-            if (LOG_LEVELS[Logger._level] > LOG_LEVELS.error) return;
-            arguments[0] = '[' + this.name + '] ' + arguments[0];
-            console.error.apply(console, arguments);
-        },
-        replicants: function() {
-            if (Logger._silent) return;
-            if (!Logger._shouldLogReplicants) return;
-            arguments[0] = '[' + this.name + '] ' + arguments[0];
-            console.info.apply(console, arguments);
-        }
-    };
+		trace() {
+			if (Logger._silent) {
+				return;
+			}
 
-    Logger.globalReconfigure = function(opts) {
-        _configure(opts);
-    };
+			if (LOG_LEVELS[Logger._level] > LOG_LEVELS.trace) {
+				return;
+			}
 
-    // Initialize with defaults
-    Logger._level = 'info';
-    Logger._silent = true;
-    Logger._shouldLogReplicants = false;
+			arguments[0] = '[' + this.name + '] ' + arguments[0];
+			console.info.apply(console, arguments);
+		}
 
-    _configure(initialOpts);
+		debug() {
+			if (Logger._silent) {
+				return;
+			}
 
-    function _configure(opts) {
-        // Initialize opts with empty objects, if nothing was provided.
-        opts = opts || {};
-        opts.console = opts.console || {};
+			if (LOG_LEVELS[Logger._level] > LOG_LEVELS.debug) {
+				return;
+			}
 
-        if (typeof opts.console.enabled !== 'undefined') {
-            Logger._silent = !opts.console.enabled;
-        }
+			arguments[0] = '[' + this.name + '] ' + arguments[0];
+			console.info.apply(console, arguments);
+		}
 
-        if (typeof opts.console.level !== 'undefined') {
-            Logger._level = opts.console.level;
-        }
+		info() {
+			if (Logger._silent) {
+				return;
+			}
 
-        if (typeof opts.replicants !== 'undefined') {
-            Logger._shouldLogReplicants = opts.replicants;
-        }
-    }
+			if (LOG_LEVELS[Logger._level] > LOG_LEVELS.info) {
+				return;
+			}
 
-    return Logger;
+			arguments[0] = '[' + this.name + '] ' + arguments[0];
+			console.info.apply(console, arguments);
+		}
+
+		warn() {
+			if (Logger._silent) {
+				return;
+			}
+
+			if (LOG_LEVELS[Logger._level] > LOG_LEVELS.warn) {
+				return;
+			}
+
+			arguments[0] = '[' + this.name + '] ' + arguments[0];
+			console.warn.apply(console, arguments);
+		}
+
+		error() {
+			if (Logger._silent) {
+				return;
+			}
+
+			if (LOG_LEVELS[Logger._level] > LOG_LEVELS.error) {
+				return;
+			}
+
+			arguments[0] = '[' + this.name + '] ' + arguments[0];
+			console.error.apply(console, arguments);
+		}
+
+		replicants() {
+			if (Logger._silent) {
+				return;
+			}
+
+			if (!Logger._shouldLogReplicants) {
+				return;
+			}
+
+			arguments[0] = '[' + this.name + '] ' + arguments[0];
+			console.info.apply(console, arguments);
+		}
+
+		static globalReconfigure(opts) {
+			_configure(opts);
+		}
+	}
+
+	// Initialize with defaults
+	Logger._level = 'info';
+	Logger._silent = true;
+	Logger._shouldLogReplicants = false;
+
+	_configure(initialOpts);
+
+	function _configure(opts) {
+		// Initialize opts with empty objects, if nothing was provided.
+		opts = opts || {};
+		opts.console = opts.console || {};
+
+		if (typeof opts.console.enabled !== 'undefined') {
+			Logger._silent = !opts.console.enabled;
+		}
+
+		if (typeof opts.console.level !== 'undefined') {
+			Logger._level = opts.console.level;
+		}
+
+		if (typeof opts.replicants !== 'undefined') {
+			Logger._shouldLogReplicants = opts.replicants;
+		}
+	}
+
+	return Logger;
 };
 
