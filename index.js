@@ -1,6 +1,7 @@
 'use strict';
 
 const path = require('path');
+const format = require('util').format;
 const fs = require('fs.extra');
 const winston = require('winston');
 
@@ -31,9 +32,11 @@ const ENUM_LEVELS = { // eslint-disable-line no-unused-vars
  *
  * @param [initialOpts.replicants=false] {Boolean} - Whether to enable logging specifically for the Replicants system.
  *
+ * @param [rollbar] {Object} - A pre-configured server-side Rollbar npm package instance.
+ *
  * @returns {function} - A constructor used to create discrete logger instances.
  */
-module.exports = function (initialOpts) {
+module.exports = function (initialOpts, rollbar) {
 	initialOpts = initialOpts || {};
 	initialOpts.console = initialOpts.console || {};
 	initialOpts.file = initialOpts.file || {};
@@ -110,6 +113,10 @@ module.exports = function (initialOpts) {
 		error() {
 			arguments[0] = '[' + this.name + '] ' + arguments[0];
 			mainLogger.error.apply(mainLogger, arguments);
+
+			if (rollbar) {
+				rollbar.reportMessage(format(...arguments), 'error');
+			}
 		}
 
 		replicants() {

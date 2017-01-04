@@ -3,9 +3,10 @@
 const sinon = require('sinon');
 const chai = require('chai');
 const expect = chai.expect;
+const loggerFactory = require('../browser');
 
 // Start up the logger lib with defaults only
-const Logger = require('../browser')();
+const Logger = loggerFactory();
 
 describe('client', () => {
 	before(function () {
@@ -171,6 +172,26 @@ describe('client', () => {
 			this.logger.replicants('replicants');
 			expect(console.info.getCall(0).args[0]).to.equal('[testClient] replicants');
 			console.info.restore();
+		});
+	});
+
+	context('when Rollbar is enabled', () => {
+		beforeEach(function () {
+			const errorSpy = sinon.spy();
+			const RollbarLogger = loggerFactory({
+				console: {
+					enabled: true
+				}
+			}, {
+				error: errorSpy
+			});
+			this.errorSpy = errorSpy;
+			this.rollbarLogger = new RollbarLogger('rollbarClient');
+		});
+
+		it('should log errors to Rollbar when global.rollbarEnabled is true', function () {
+			this.rollbarLogger.error('error message');
+			expect(this.errorSpy.getCall(0).args).to.deep.equal(['[rollbarClient] error message']);
 		});
 	});
 });

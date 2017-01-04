@@ -1,6 +1,8 @@
 /* eslint-env browser */
 'use strict';
 
+const format = require('format-util');
+
 const LOG_LEVELS = {
 	trace: 0,
 	debug: 1,
@@ -32,9 +34,11 @@ const ENUM_LEVELS = { // eslint-disable-line no-unused-vars
  *
  * @param [initialOpts.replicants=false] {Boolean} - Whether to enable logging specifically for the Replicants system.
  *
+ * @param [rollbar] {Object} - A pre-configured client-side Rollbar.js instance.
+ *
  * @returns {function} - A constructor used to create discrete logger instances.
  */
-module.exports = function (initialOpts) {
+module.exports = function (initialOpts, rollbar) {
 	initialOpts = initialOpts || {};
 	initialOpts.console = initialOpts.console || {};
 
@@ -112,6 +116,10 @@ module.exports = function (initialOpts) {
 
 			arguments[0] = '[' + this.name + '] ' + arguments[0];
 			console.error.apply(console, arguments);
+
+			if (rollbar) {
+				rollbar.error(format(...arguments));
+			}
 		}
 
 		replicants() {

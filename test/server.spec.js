@@ -4,12 +4,12 @@ const fs = require('fs');
 const sinon = require('sinon');
 const rimraf = require('rimraf');
 const chai = require('chai');
-
 chai.use(require('chai-string'));
 const expect = chai.expect;
+const loggerFactory = require('../index');
 
 // Start up the logger lib with defaults only
-const Logger = require('../index')();
+const Logger = loggerFactory();
 
 describe('server', () => {
 	before(function () {
@@ -137,6 +137,25 @@ describe('server', () => {
 				'\u001b[32mtrace\u001b[39m: [testServer] info'
 			);
 			process.stdout.write.restore();
+		});
+	});
+
+	context('when Rollbar is enabled', () => {
+		const rollbar = require('rollbar');
+
+		beforeEach(function () {
+			const rollbarMock = sinon.mock(rollbar);
+			const RollbarLogger = loggerFactory({}, rollbar);
+			this.rollbarMock = rollbarMock;
+			this.rollbarLogger = new RollbarLogger('rollbarServer');
+		});
+
+		it('should log errors to Rollbar when global.rollbarEnabled is true', function () {
+			this.rollbarMock.expects('reportMessage')
+				.once()
+				.withExactArgs('[rollbarServer] error message', 'error');
+			this.rollbarLogger.error('error message');
+			this.rollbarMock.verify();
 		});
 	});
 });
