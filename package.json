@@ -52,5 +52,8 @@
     "rollbar": "^0.6.3",
     "sinon": "^1.17.2"
   },
-  "browser": "./browser.js"
+  "browser": "./browser.js",
+  "engines" : {
+    "node" : ">=6"
+  }
 }
