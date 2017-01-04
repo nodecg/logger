@@ -76,6 +76,61 @@ module.exports = function (initialOpts) {
 		}
 	});
 
+	/**
+	 * Constructs a new Logger instance that prefixes all output with the given name.
+	 * @param name {String} - The label to prefix all output of this logger with.
+	 * @returns {Object} - A Logger instance.
+	 * @constructor
+	 */
+	class Logger {
+		constructor(name) {
+			this.name = name;
+		}
+
+		trace() {
+			arguments[0] = '[' + this.name + '] ' + arguments[0];
+			mainLogger.trace.apply(mainLogger, arguments);
+		}
+
+		debug() {
+			arguments[0] = '[' + this.name + '] ' + arguments[0];
+			mainLogger.debug.apply(mainLogger, arguments);
+		}
+
+		info() {
+			arguments[0] = '[' + this.name + '] ' + arguments[0];
+			mainLogger.info.apply(mainLogger, arguments);
+		}
+
+		warn() {
+			arguments[0] = '[' + this.name + '] ' + arguments[0];
+			mainLogger.warn.apply(mainLogger, arguments);
+		}
+
+		error() {
+			arguments[0] = '[' + this.name + '] ' + arguments[0];
+			mainLogger.error.apply(mainLogger, arguments);
+		}
+
+		replicants() {
+			if (!Logger._shouldLogReplicants) {
+				return;
+			}
+
+			arguments[0] = '[' + this.name + '] ' + arguments[0];
+			mainLogger.info.apply(mainLogger, arguments);
+		}
+
+		static globalReconfigure(opts) {
+			_configure(opts);
+		}
+	}
+
+	Logger._winston = mainLogger;
+
+	// A messy bit of internal state used to determine if the special-case "replicants" logging level is active.
+	Logger._shouldLogReplicants = Boolean(initialOpts.replicants);
+
 	_configure(initialOpts);
 
 	function _configure(opts) {
@@ -102,70 +157,17 @@ module.exports = function (initialOpts) {
 
 		if (typeof opts.file.path !== 'undefined') {
 			fileTransport.filename = opts.file.path;
-			_makeLogFolderIfItDoesNotExist(opts.file.path);
+
+			// Make logs folder if it does not exist.
+			if (!fs.existsSync(path.dirname(opts.file.path))) {
+				fs.mkdirpSync(path.dirname(opts.file.path));
+			}
 		}
 
 		if (typeof opts.replicants !== 'undefined') {
 			Logger._shouldLogReplicants = opts.replicants;
 		}
 	}
-
-	function _makeLogFolderIfItDoesNotExist(folderPath) {
-		// Make logs folder if it does not exist.
-		if (!fs.existsSync(path.dirname(folderPath))) {
-			fs.mkdirpSync(path.dirname(folderPath));
-		}
-	}
-
-	/**
-	 * Constructs a new Logger instance that prefixes all output with the given name.
-	 * @param name {String} - The label to prefix all output of this logger with.
-	 * @returns {Object} - A Logger instance.
-	 * @constructor
-	 */
-	function Logger(name) {
-		this.name = name;
-	}
-
-	Logger.prototype = {
-		trace() {
-			arguments[0] = '[' + this.name + '] ' + arguments[0];
-			mainLogger.trace.apply(mainLogger, arguments);
-		},
-		debug() {
-			arguments[0] = '[' + this.name + '] ' + arguments[0];
-			mainLogger.debug.apply(mainLogger, arguments);
-		},
-		info() {
-			arguments[0] = '[' + this.name + '] ' + arguments[0];
-			mainLogger.info.apply(mainLogger, arguments);
-		},
-		warn() {
-			arguments[0] = '[' + this.name + '] ' + arguments[0];
-			mainLogger.warn.apply(mainLogger, arguments);
-		},
-		error() {
-			arguments[0] = '[' + this.name + '] ' + arguments[0];
-			mainLogger.error.apply(mainLogger, arguments);
-		},
-		replicants() {
-			if (!Logger._shouldLogReplicants) {
-				return;
-			}
-
-			arguments[0] = '[' + this.name + '] ' + arguments[0];
-			mainLogger.info.apply(mainLogger, arguments);
-		}
-	};
-
-	Logger.globalReconfigure = function (opts) {
-		_configure(opts);
-	};
-
-	Logger._winston = mainLogger;
-
-	// A messy bit of internal state used to determine if the special-case "replicants" logging level is active.
-	Logger._shouldLogReplicants = Boolean(initialOpts.replicants);
 
 	return Logger;
 };
