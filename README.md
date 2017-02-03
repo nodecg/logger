@@ -1,4 +1,6 @@
 # @nodecg/logger
+
+[![Greenkeeper badge](https://badges.greenkeeper.io/nodecg/logger.svg)](https://greenkeeper.io/)
 NodeCG's internal logging library
 
 [![Build Status](https://travis-ci.org/nodecg/logger.svg?branch=master)](https://travis-ci.org/nodecg/logger)
