@@ -32,11 +32,11 @@ const ENUM_LEVELS = { // eslint-disable-line no-unused-vars
  *
  * @param [initialOpts.replicants=false] {Boolean} - Whether to enable logging specifically for the Replicants system.
  *
- * @param [rollbar] {Object} - A pre-configured server-side Rollbar npm package instance.
+ * @param [Raven] {Object} - A pre-configured server-side Raven npm package instance, for reporting errors to Sentry.io
  *
  * @returns {function} - A constructor used to create discrete logger instances.
  */
-module.exports = function (initialOpts, rollbar) {
+module.exports = function (initialOpts, Raven) {
 	initialOpts = initialOpts || {};
 	initialOpts.console = initialOpts.console || {};
 	initialOpts.file = initialOpts.file || {};
@@ -114,8 +114,10 @@ module.exports = function (initialOpts, rollbar) {
 			arguments[0] = '[' + this.name + '] ' + arguments[0];
 			mainLogger.error.apply(mainLogger, arguments);
 
-			if (rollbar) {
-				rollbar.reportMessage(format(...arguments), 'error');
+			if (Raven) {
+				Raven.captureException(new Error(format(...arguments)), {
+					logger: 'server @nodecg/logger'
+				});
 			}
 		}
 

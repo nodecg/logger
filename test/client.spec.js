@@ -2,6 +2,7 @@
 
 const sinon = require('sinon');
 const chai = require('chai');
+const assert = chai.assert;
 const expect = chai.expect;
 const loggerFactory = require('../browser');
 
@@ -175,23 +176,28 @@ describe('client', () => {
 		});
 	});
 
-	context('when Rollbar is enabled', () => {
+	context('when Sentry is enabled', () => {
 		beforeEach(function () {
-			const errorSpy = sinon.spy();
-			const RollbarLogger = loggerFactory({
+			const RavenMock = {
+				captureException: sinon.stub()
+			};
+			const RavenLogger = loggerFactory({
 				console: {
 					enabled: true
 				}
-			}, {
-				error: errorSpy
-			});
-			this.errorSpy = errorSpy;
-			this.rollbarLogger = new RollbarLogger('rollbarClient');
+			}, RavenMock);
+			this.RavenMock = RavenMock;
+			this.ravenLogger = new RavenLogger('sentryClient');
 		});
 
-		it('should log errors to Rollbar when global.rollbarEnabled is true', function () {
-			this.rollbarLogger.error('error message');
-			expect(this.errorSpy.getCall(0).args).to.deep.equal(['[rollbarClient] error message']);
+		it('should log errors to Sentry when global.sentryEnabled is true', function () {
+			this.ravenLogger.error('error message');
+			assert.isTrue(this.RavenMock.captureException.calledOnce);
+			assert.isTrue(this.RavenMock.captureException.firstCall.args[0] instanceof Error, 'first arg is Error');
+			assert.equal(this.RavenMock.captureException.firstCall.args[0].message, '[sentryClient] error message');
+			assert.deepEqual(this.RavenMock.captureException.firstCall.args[1], {
+				logger: 'client @nodecg/logger'
+			});
 		});
 	});
 });
