@@ -141,37 +141,37 @@ describe('client', () => {
 			// Trace
 			sinon.spy(console, 'info');
 			this.logger.trace('trace');
-			expect(console.info.getCall(0).args[0]).to.equal('[testClient] trace');
+			expect(console.info.getCall(0).args).to.deep.equal(['[testClient]', 'trace']);
 			console.info.restore();
 
 			// Debug
 			sinon.spy(console, 'info');
 			this.logger.debug('debug');
-			expect(console.info.getCall(0).args[0]).to.equal('[testClient] debug');
+			expect(console.info.getCall(0).args).to.deep.equal(['[testClient]', 'debug']);
 			console.info.restore();
 
 			// Info
 			sinon.spy(console, 'info');
 			this.logger.info('info');
-			expect(console.info.getCall(0).args[0]).to.equal('[testClient] info');
+			expect(console.info.getCall(0).args).to.deep.equal(['[testClient]', 'info']);
 			console.info.restore();
 
 			// Warn
 			sinon.spy(console, 'warn');
 			this.logger.warn('warn');
-			expect(console.warn.getCall(0).args[0]).to.equal('[testClient] warn');
+			expect(console.warn.getCall(0).args).to.deep.equal(['[testClient]', 'warn']);
 			console.warn.restore();
 
 			// Error
 			sinon.spy(console, 'error');
 			this.logger.error('error');
-			expect(console.error.getCall(0).args[0]).to.equal('[testClient] error');
+			expect(console.error.getCall(0).args).to.deep.equal(['[testClient]', 'error']);
 			console.error.restore();
 
 			// Replicants
 			sinon.spy(console, 'info');
 			this.logger.replicants('replicants');
-			expect(console.info.getCall(0).args[0]).to.equal('[testClient] replicants');
+			expect(console.info.getCall(0).args).to.deep.equal(['[testClient]', 'replicants']);
 			console.info.restore();
 		});
 	});
@@ -198,6 +198,12 @@ describe('client', () => {
 			assert.deepEqual(this.RavenMock.captureException.firstCall.args[1], {
 				logger: 'client @nodecg/logger'
 			});
+		});
+
+		it('should prettyprint objects', function () {
+			this.ravenLogger.error('error message:', {foo: {bar: 'baz'}});
+			assert.equal(this.RavenMock.captureException.firstCall.args[0].message,
+				'[sentryClient] error message: { foo: { bar: \'baz\' } }');
 		});
 	});
 });

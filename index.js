@@ -1,7 +1,7 @@
 'use strict';
 
 const path = require('path');
-const format = require('util').format;
+const {format, inspect} = require('util');
 const fs = require('fs.extra');
 const winston = require('winston');
 
@@ -91,31 +91,32 @@ module.exports = function (initialOpts, Raven) {
 		}
 
 		trace() {
-			arguments[0] = '[' + this.name + '] ' + arguments[0];
-			mainLogger.trace.apply(mainLogger, arguments);
+			mainLogger.trace(`[${this.name}]`, ...arguments);
 		}
 
 		debug() {
-			arguments[0] = '[' + this.name + '] ' + arguments[0];
-			mainLogger.debug.apply(mainLogger, arguments);
+			mainLogger.debug(`[${this.name}]`, ...arguments);
 		}
 
 		info() {
-			arguments[0] = '[' + this.name + '] ' + arguments[0];
-			mainLogger.info.apply(mainLogger, arguments);
+			mainLogger.info(`[${this.name}]`, ...arguments);
 		}
 
 		warn() {
-			arguments[0] = '[' + this.name + '] ' + arguments[0];
-			mainLogger.warn.apply(mainLogger, arguments);
+			mainLogger.warn(`[${this.name}]`, ...arguments);
 		}
 
 		error() {
-			arguments[0] = '[' + this.name + '] ' + arguments[0];
-			mainLogger.error.apply(mainLogger, arguments);
+			mainLogger.error(`[${this.name}]`, ...arguments);
 
 			if (Raven) {
-				Raven.captureException(new Error(format(...arguments)), {
+				const formattedArgs = Array.from(arguments).map(argument => {
+					return typeof argument === 'object' ?
+						inspect(argument, {depth: null, showProxy: true}) :
+						argument;
+				});
+
+				Raven.captureException(new Error(format(`[${this.name}]`, ...formattedArgs)), {
 					logger: 'server @nodecg/logger'
 				});
 			}
@@ -126,8 +127,7 @@ module.exports = function (initialOpts, Raven) {
 				return;
 			}
 
-			arguments[0] = '[' + this.name + '] ' + arguments[0];
-			mainLogger.info.apply(mainLogger, arguments);
+			mainLogger.info(`[${this.name}]`, ...arguments);
 		}
 
 		static globalReconfigure(opts) {

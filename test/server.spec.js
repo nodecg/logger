@@ -99,14 +99,14 @@ describe('server', () => {
 			['trace', 'debug', 'info', 'warn', 'error'].forEach(level => {
 				sinon.spy(Logger._winston, level);
 				self.logger[level](level);
-				expect(Logger._winston[level].getCall(0).args[0]).to.equal('[testServer] ' + level);
+				expect(Logger._winston[level].getCall(0).args).to.deep.equal(['[testServer]', level]);
 				Logger._winston[level].restore();
 			});
 
 			// Replicants has to be tested differently than the others
 			sinon.spy(Logger._winston, 'info');
 			self.logger.replicants('replicants');
-			expect(Logger._winston.info.getCall(0).args[0]).to.equal('[testServer] replicants');
+			expect(Logger._winston.info.getCall(0).args).to.deep.equal(['[testServer]', 'replicants']);
 			Logger._winston.info.restore();
 		});
 
@@ -159,6 +159,12 @@ describe('server', () => {
 			assert.deepEqual(this.RavenMock.captureException.firstCall.args[1], {
 				logger: 'server @nodecg/logger'
 			});
+		});
+
+		it('should prettyprint objects', function () {
+			this.ravenLogger.error('error message:', {foo: {bar: 'baz'}});
+			assert.equal(this.RavenMock.captureException.firstCall.args[0].message,
+				'[sentryServer] error message: { foo: { bar: \'baz\' } }');
 		});
 	});
 });

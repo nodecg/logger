@@ -1,7 +1,7 @@
 /* eslint-env browser */
 'use strict';
 
-const format = require('format-util');
+const {format, inspect} = require('util');
 
 const LOG_LEVELS = {
 	trace: 0,
@@ -62,8 +62,7 @@ module.exports = function (initialOpts, Raven) {
 				return;
 			}
 
-			arguments[0] = '[' + this.name + '] ' + arguments[0];
-			console.info.apply(console, arguments);
+			console.info(`[${this.name}]`, ...arguments);
 		}
 
 		debug() {
@@ -75,8 +74,7 @@ module.exports = function (initialOpts, Raven) {
 				return;
 			}
 
-			arguments[0] = '[' + this.name + '] ' + arguments[0];
-			console.info.apply(console, arguments);
+			console.info(`[${this.name}]`, ...arguments);
 		}
 
 		info() {
@@ -88,8 +86,7 @@ module.exports = function (initialOpts, Raven) {
 				return;
 			}
 
-			arguments[0] = '[' + this.name + '] ' + arguments[0];
-			console.info.apply(console, arguments);
+			console.info(`[${this.name}]`, ...arguments);
 		}
 
 		warn() {
@@ -101,8 +98,7 @@ module.exports = function (initialOpts, Raven) {
 				return;
 			}
 
-			arguments[0] = '[' + this.name + '] ' + arguments[0];
-			console.warn.apply(console, arguments);
+			console.warn(`[${this.name}]`, ...arguments);
 		}
 
 		error() {
@@ -114,11 +110,16 @@ module.exports = function (initialOpts, Raven) {
 				return;
 			}
 
-			arguments[0] = '[' + this.name + '] ' + arguments[0];
-			console.error.apply(console, arguments);
+			console.error(`[${this.name}]`, ...arguments);
 
 			if (Raven) {
-				Raven.captureException(new Error(format(...arguments)), {
+				const formattedArgs = Array.from(arguments).map(argument => {
+					return typeof argument === 'object' ?
+						inspect(argument, {depth: null, showProxy: true}) :
+						argument;
+				});
+
+				Raven.captureException(new Error(format(`[${this.name}]`, ...formattedArgs)), {
 					logger: 'client @nodecg/logger'
 				});
 			}
@@ -133,8 +134,7 @@ module.exports = function (initialOpts, Raven) {
 				return;
 			}
 
-			arguments[0] = '[' + this.name + '] ' + arguments[0];
-			console.info.apply(console, arguments);
+			console.info(`[${this.name}]`, ...arguments);
 		}
 
 		static globalReconfigure(opts) {
