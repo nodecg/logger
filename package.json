@@ -50,7 +50,7 @@
     "mocha-lcov-reporter": "^1.0.0",
     "rimraf": "^2.4.4",
     "rollbar": "^0.6.3",
-    "sinon": "^2.0.0"
+    "sinon": "^3.0.0"
   },
   "browser": "./browser.js",
   "engines" : {
